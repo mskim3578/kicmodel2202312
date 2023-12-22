@@ -13,8 +13,9 @@ bottom : 0px;
 </style>
 </head>
 <body>
+<div   class="container">
 <footer class="my-3 text-center text-small">
 			<p class="mb-1">&copy; KICCAMPUS</p>
-		</footer>
+		</footer></div>
 </body>
 </html>

@@ -12,6 +12,8 @@
   <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
  
+ 
+ 
 </head>
 <body>
 
@@ -44,14 +46,16 @@
     <!-- Dropdown -->
     <li class="nav-item dropdown">
       <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
-        게시판
+        게시판[${boardid}]
       </a>
       <div class="dropdown-menu">
-        <a class="dropdown-item" href="boardList?boardid=1">공지사항</a>
-        <a class="dropdown-item" href="boardList?boardid=2">자유게시판</a>
-        <a class="dropdown-item" href="boardList?boardid=3">QnA</a>
+        <a class="dropdown-item" href="${pageContext.request.contextPath}/board/boardList?boardid=1">공지사항</a>
+        <a class="dropdown-item" href="${pageContext.request.contextPath}/board/boardList?boardid=2">자유게시판</a>
+        <a class="dropdown-item" href="${pageContext.request.contextPath}/board/boardList?boardid=3">QnA</a>
       </div>
     </li>
+  
+  
   </ul>
   
 </nav>
