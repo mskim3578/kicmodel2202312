@@ -16,6 +16,7 @@ import dao.BoardDao;
 import kic.mskim.MskimRequestMapping;
 import kic.mskim.RequestMapping;
 import model.Board;
+import model.Comment;
 
 @WebServlet("/board/*")
 public class BoardController extends MskimRequestMapping {
@@ -83,7 +84,10 @@ public class BoardController extends MskimRequestMapping {
         
         //boardid session 처리한다
         if (req.getParameter("boardid")!=null) {   //?boardid=3
-        	session.setAttribute("boardid", req.getParameter("boardid"));       }
+        	session.setAttribute("boardid", req.getParameter("boardid"));   
+        	session.setAttribute("pageNum", "1");  
+        
+        }
         String boardid = (String) session.getAttribute("boardid");
         if (boardid==null)  boardid = "1";
         String boardName = "";
@@ -100,7 +104,9 @@ public class BoardController extends MskimRequestMapping {
 
 		}
         //page 설정
-        String pageNum = req.getParameter("pageNum");
+        if (req.getParameter("pageNum")!=null) {  //pageNum
+        	session.setAttribute("pageNum", req.getParameter("pageNum"));       }
+        String pageNum = (String) session.getAttribute("pageNum");
         if (pageNum==null) pageNum = "1";
         
         
@@ -113,12 +119,23 @@ public class BoardController extends MskimRequestMapping {
         int boardNum = boardCount - ((pageInt - 1) * limit);
         
         List<Board> li = bd.boardList(pageInt, limit, boardid);
-        
+  
+        // pagging
+		int bottomLine = 3;
+		int start = (pageInt - 1) / bottomLine * bottomLine + 1;//1,2,3->1 , 4,5,6->4
+		int end = start + bottomLine - 1;
+		int maxPage = (boardCount / limit) + (boardCount % limit == 0 ? 0 : 1);
+		if (end > maxPage) 			end = maxPage;
        
-	
+		req.setAttribute("bottomLine", bottomLine);
+		req.setAttribute("start",start);
+		req.setAttribute("end",end);
+		req.setAttribute("maxPage", maxPage);
+		req.setAttribute("pageInt", pageInt);
 		
 		req.setAttribute("li", li);
 	    req.setAttribute("boardName", boardName);
+	    req.setAttribute("boardCount", boardCount);
 		
 		
 		return "/WEB-INF/view/board/boardList.jsp";
@@ -129,9 +146,10 @@ public class BoardController extends MskimRequestMapping {
 		// TODO Auto-generated method stub
 
 		int num = Integer.parseInt(req.getParameter("num"));
-
 		Board board = bd.oneBoard(num);
-
+        List<Comment> commentLi = bd.commentList(num);
+		
+        req.setAttribute("commentLi", commentLi);
 		req.setAttribute("board", board);
 		return "/WEB-INF/view/board/boardInfo.jsp";
 	}
@@ -223,6 +241,23 @@ public class BoardController extends MskimRequestMapping {
 		return "/WEB-INF/view/alert.jsp";	
 		
 	}
+	
+	@RequestMapping("boardCommentPro")
+	public String boardCommentPro(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		// TODO Auto-generated method stub
+		//System.out.println("commentPro");
+		//req.setAttribute("comment", req.getParameter("comment"));
+		//req.setAttribute("boardnum", req.getParameter("boardnum"));
+		String comment = req.getParameter("comment");
+		int boardnum = Integer.parseInt(req.getParameter("boardnum"));
+		bd.insertComment(comment, boardnum);
+		Comment c = new Comment();
+		c.setNum(boardnum);
+		c.setContent(comment);
+		req.setAttribute("c", c);
+		return "/single/boardCommentPro.jsp";
+	}
+	
 }
 
 
