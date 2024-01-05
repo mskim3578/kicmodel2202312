@@ -7,6 +7,7 @@
 <meta charset="UTF-8">
 <title>Insert title here</title>
 <script>
+    let count = ${count}
 	function enterkey(num) {
 		if (window.event.keyCode == 13) {
 			commentPro(num)
@@ -15,12 +16,12 @@
 	}
 
 	function commentPro(num) {
-
+        count=count+1
 		let comment = document.querySelector("#comment").value
 		//alert(comment)
 		const xhttp = new XMLHttpRequest()
 		let url = "${pageContext.request.contextPath}/board/boardCommentPro?comment="
-				+ comment + "&boardnum=" + num
+				+ comment + "&boardnum=" + num+ "&count=" + count
 		xhttp.open("GET", url, true)
 		xhttp.send()
 		xhttp.onreadystatechange = function() {
@@ -91,11 +92,14 @@
 							onclick="commentPro('${board.num}')">저장</button>
 					</div>
 				</div>
-
+				
+         <c:set  var="ser"  value="${count }"/>
 				<div class="row" id="commentList">
 					<c:forEach  var="c"  items="${commentLi }">
 						<div class="col-sm-1">&nbsp;</div>
-						<div class="col-sm-1">${c.num }</div>
+						<div class="col-sm-1">${ser}</div>
+						<c:set  var="ser"  value="${ser-1 }"/>
+						  <c:set  var="boardNum"  value="${boardNum }"/>
 						<div class="col-sm-9">${c.content }</div>
 						<div class="col-sm-1">&nbsp;</div>
 

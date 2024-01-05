@@ -13,6 +13,7 @@ import javax.servlet.http.HttpSession;
 import com.oreilly.servlet.MultipartRequest;
 
 import dao.BoardDao;
+import dao.BoardMybatisDao;
 import kic.mskim.MskimRequestMapping;
 import kic.mskim.RequestMapping;
 import model.Board;
@@ -67,7 +68,7 @@ public class BoardController extends MskimRequestMapping {
 		board.setContent(multi.getParameter("content"));
 		board.setFile1(multi.getFilesystemName("file1")); // name="file1"
 		System.out.println(board);
-
+		BoardMybatisDao bd = new BoardMybatisDao();
 		int num = bd.insertBoard(board);
 		if (num > 0) {
 			msg = "게시물 등록 성공";
@@ -110,14 +111,14 @@ public class BoardController extends MskimRequestMapping {
         if (pageNum==null) pageNum = "1";
         
         
-        
+     	BoardMybatisDao bd = new BoardMybatisDao();
      
         int limit = 3; // 한 page당 게시물 갯수
         int pageInt = Integer.parseInt(pageNum); // page 번호
         int boardCount = bd.boardCount(boardid); // 전체 게시물 갯수
        
         int boardNum = boardCount - ((pageInt - 1) * limit);
-        
+   
         List<Board> li = bd.boardList(pageInt, limit, boardid);
   
         // pagging
@@ -136,7 +137,7 @@ public class BoardController extends MskimRequestMapping {
 		req.setAttribute("li", li);
 	    req.setAttribute("boardName", boardName);
 	    req.setAttribute("boardCount", boardCount);
-		
+	    req.setAttribute("boardNum", boardNum);
 		
 		return "/WEB-INF/view/board/boardList.jsp";
 	}
@@ -144,24 +145,23 @@ public class BoardController extends MskimRequestMapping {
 	@RequestMapping("boardInfo")
 	public String boardInfo(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		// TODO Auto-generated method stub
-
+		BoardMybatisDao bd = new BoardMybatisDao();
 		int num = Integer.parseInt(req.getParameter("num"));
 		Board board = bd.oneBoard(num);
         List<Comment> commentLi = bd.commentList(num);
-		
+		int count = commentLi.size();
         req.setAttribute("commentLi", commentLi);
 		req.setAttribute("board", board);
+		req.setAttribute("count", count);
+		
 		return "/WEB-INF/view/board/boardInfo.jsp";
 	}
 
 	@RequestMapping("boardUpdateForm")
 	public String boardUpdateForm(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		// TODO Auto-generated method stub
-
 		int num = Integer.parseInt(req.getParameter("num"));
-
+		BoardMybatisDao bd = new BoardMybatisDao();
 		Board board = bd.oneBoard(num);
-
 		req.setAttribute("board", board);
 		return "/WEB-INF/view/board/boardUpdateForm.jsp";
 	}
@@ -174,7 +174,7 @@ public class BoardController extends MskimRequestMapping {
        
 		MultipartRequest multi = new MultipartRequest(req, path, 10 * 1024 * 1024, "UTF-8");
 		int num = Integer.parseInt(multi.getParameter("num"));
-	
+		BoardMybatisDao bd = new BoardMybatisDao();
 		Board originboard = bd.oneBoard(num);
 		
 		String msg = "게시물 수정 실패";
@@ -215,6 +215,7 @@ public class BoardController extends MskimRequestMapping {
 	public String boardDeleteForm(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		// TODO Auto-generated method stub
 		req.setAttribute("num", req.getParameter("num"));
+		
 		return "/WEB-INF/view/board/boardDeleteForm.jsp";
 	}
 	
@@ -223,6 +224,7 @@ public class BoardController extends MskimRequestMapping {
 	public String boardDeletePro(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		// TODO Auto-generated method stub
 		int num = Integer.parseInt(req.getParameter("num"));
+		BoardMybatisDao bd = new BoardMybatisDao();
 		Board board = bd.oneBoard(num);
 		String msg = "삭제 불가합니다";
 		String url = "/board/boardDeleteForm?num="+num;
@@ -248,6 +250,7 @@ public class BoardController extends MskimRequestMapping {
 		//System.out.println("commentPro");
 		//req.setAttribute("comment", req.getParameter("comment"));
 		//req.setAttribute("boardnum", req.getParameter("boardnum"));
+		BoardMybatisDao bd = new BoardMybatisDao();
 		String comment = req.getParameter("comment");
 		int boardnum = Integer.parseInt(req.getParameter("boardnum"));
 		bd.insertComment(comment, boardnum);
@@ -255,6 +258,7 @@ public class BoardController extends MskimRequestMapping {
 		c.setNum(boardnum);
 		c.setContent(comment);
 		req.setAttribute("c", c);
+		req.setAttribute("count", req.getParameter("count"));
 		return "/single/boardCommentPro.jsp";
 	}
 	

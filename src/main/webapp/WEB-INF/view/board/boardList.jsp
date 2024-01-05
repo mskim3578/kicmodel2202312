@@ -22,9 +22,11 @@
       </tr>
     </thead>
     <tbody>
+    <c:set  var="boardNum"  value="${boardNum }"/>
     <c:forEach   var="b"  items="${li }">
       <tr>
-        <td>${b.num }</td>
+        <td>${boardNum}</td>
+        <c:set  var="boardNum"  value="${boardNum-1 }"/>
         <td>${b.name }</td>
           <td><a    href="boardInfo?num=${b.num}"      >${b.subject }</a></td>
             <td>${b.regdate }</td>
