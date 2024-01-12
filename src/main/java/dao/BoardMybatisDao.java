@@ -11,6 +11,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Resource;
+
 import org.apache.ibatis.session.SqlSession;
 
 import model.Board;
@@ -18,6 +20,7 @@ import model.Comment;
 import model.KicMember;
 import mybatis.KicMemberAnno;
 import mybatis.MybatisConnection;
+
 
 public class BoardMybatisDao {
 	
